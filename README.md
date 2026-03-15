@@ -1,153 +1,173 @@
-# BLADE — Barber Concierge · React Native iOS
+# BLADE API — Backend Node.js
 
-> Application mobile iOS de conciergerie barbier à domicile.  
-> Inspirée d'Uber — pour la coiffure de luxe en privé.
+> API REST + WebSocket temps réel pour l'app BLADE Barber Concierge.
 
 ---
 
-## Stack technique
+## Stack
 
-| Technologie | Usage |
+| Techno | Usage |
 |---|---|
-| React Native 0.73 | Framework mobile |
-| TypeScript | Typage statique |
-| React Navigation v6 | Navigation (Stack + Bottom Tabs) |
-| Zustand | State management |
-| React Native Maps | Carte & tracking GPS |
-| Stripe SDK | Paiement |
-| Socket.io | Tracking en temps réel |
+| Node.js + Express | Serveur HTTP |
+| PostgreSQL | Base de données principale |
+| Socket.io | Tracking GPS temps réel |
+| Stripe | Paiement + remboursement |
+| Apple APNs | Push notifications iOS |
+| JWT | Authentification |
+| bcryptjs | Hashage des mots de passe |
 
 ---
 
-## Structure du projet
+## Structure
 
 ```
-blade-barber/
-├── App.tsx                        # Entrée principale
-├── src/
-│   ├── navigation/
-│   │   └── AppNavigator.tsx       # Toute la navigation
-│   ├── theme/
-│   │   └── index.ts               # Couleurs, fonts, spacing
-│   ├── components/
-│   │   ├── UI.tsx                 # Composants réutilisables
-│   │   └── ScreenWrapper.tsx      # Header & BottomTabBar
-│   └── screens/
-│       ├── auth/
-│       │   ├── OnboardingScreen.tsx   # 3 slides d'intro
-│       │   ├── LoginScreen.tsx        # Connexion
-│       │   └── SignupScreen.tsx       # Inscription 4 étapes
-│       ├── client/
-│       │   ├── HomeScreen.tsx         # Accueil client
-│       │   ├── SearchScreen.tsx       # Recherche + Profil barbier
-│       │   └── BookingScreen.tsx      # Réservation / Paiement / Tracking / Avis / Historique
-│       ├── barber/
-│       │   └── BarberDashboardScreen.tsx  # Dashboard Pro + Admin
-│       └── shared/
-│           └── NotificationsScreen.tsx    # Notifs / Profil / Settings / Support
+src/
+├── index.js                    # Entrée principale — Express + Socket.io
+├── config/
+│   └── database.js             # Pool PostgreSQL
+├── middleware/
+│   └── auth.js                 # Vérification JWT + rôles
+├── routes/
+│   └── index.js                # Toutes les routes API
+├── controllers/
+│   ├── authController.js       # Register, login, refresh, logout
+│   ├── barbiersController.js   # Liste, profil, slots, zones
+│   ├── bookingsController.js   # Réservations + machine à états
+│   ├── paymentsController.js   # Stripe PaymentIntent + webhook
+│   └── reviewsController.js    # Avis, notifications, profil
+├── services/
+│   ├── trackingService.js      # Socket.io GPS temps réel
+│   └── notifService.js         # APNs + schedulers
+└── utils/
+    └── migrate.js              # Création des tables PostgreSQL
 ```
 
 ---
 
-## Flux de navigation
-
-```
-Onboarding (3 slides)
-    ↓
-Login ←→ Signup (4 étapes)
-    ↓              ↓
-ClientTabs      BarberTabs
-  ├── Accueil        ├── Dashboard Pro
-  ├── Recherche      └── Admin
-  ├── Tracking
-  ├── Notifications
-  └── Profil
-       ├── Paramètres
-       ├── Support
-       └── Historique
-```
-
----
-
-## Installation & lancement iOS
-
-### Prérequis
-- macOS avec Xcode 15+
-- Node.js 18+
-- CocoaPods
-- iOS Simulator ou iPhone physique
-
-### 1. Installer les dépendances
+## Installation
 
 ```bash
-git clone https://github.com/TON-USERNAME/blade-barber-rn.git
-cd blade-barber-rn
-
+git clone https://github.com/TON-USERNAME/blade-barber-api.git
+cd blade-barber-api
 npm install
-cd ios && pod install && cd ..
+
+# Copier et remplir le .env
+cp .env.example .env
+
+# Créer la base de données
+createdb blade_barber
+
+# Lancer les migrations
+npm run migrate
+
+# Démarrer en dev
+npm run dev
 ```
 
-### 2. Lancer l'app iOS
+---
+
+## Variables d'environnement
+
+Voir `.env.example` — variables requises :
+- `DB_*` — connexion PostgreSQL
+- `JWT_SECRET` + `JWT_REFRESH_SECRET` — min 32 caractères
+- `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`
+- `APN_KEY_PATH` + `APN_KEY_ID` + `APN_TEAM_ID`
+
+---
+
+## Endpoints
+
+### Auth
+| Méthode | Route | Description |
+|---|---|---|
+| POST | /api/auth/register | Créer un compte |
+| POST | /api/auth/login | Se connecter |
+| POST | /api/auth/refresh | Rafraîchir le token |
+| POST | /api/auth/logout | Se déconnecter |
+
+### Barbiers
+| Méthode | Route | Description |
+|---|---|---|
+| GET | /api/barbiers | Liste avec filtres |
+| GET | /api/barbiers/:id | Profil détaillé |
+| GET | /api/barbiers/:id/slots?date= | Créneaux disponibles |
+| GET | /api/barbiers/:id/reviews | Avis |
+| PUT | /api/barbiers/availability | Changer disponibilité |
+
+### Réservations
+| Méthode | Route | Description |
+|---|---|---|
+| POST | /api/bookings | Créer une réservation |
+| GET | /api/bookings/me | Mes réservations |
+| GET | /api/bookings/missions | Missions du barbier |
+| PUT | /api/bookings/:id/status | Changer le statut |
+| PUT | /api/bookings/:id/cancel | Annuler |
+
+### Paiements
+| Méthode | Route | Description |
+|---|---|---|
+| POST | /api/payments/intent | Créer PaymentIntent Stripe |
+| POST | /api/payments/confirm | Confirmer le paiement |
+| POST | /api/payments/refund/:id | Rembourser |
+| POST | /api/payments/webhook | Webhook Stripe |
+
+---
+
+## Cycle de vie d'une réservation
+
+```
+pending → confirmed (paiement ok)
+        → validated (barbier accepte)
+        → en_route  (barbier en déplacement)
+        → tracking_active (30min avant RDV)
+        → arrived   (barbier sur place)
+        → in_progress (prestation en cours)
+        → completed → reviewed
+        → cancelled → refunded
+```
+
+---
+
+## WebSocket — Tracking
+
+```javascript
+// Connexion depuis l'app mobile
+const socket = io('http://localhost:3000', {
+  auth: { userId: 'uuid', role: 'client', bookingId: 'uuid' }
+});
+
+// Rejoindre la room
+socket.emit('join_tracking', { bookingId });
+
+// Recevoir la position du barbier
+socket.on('position_update', ({ lat, lng, recordedAt }) => {
+  // Mettre à jour le marker sur la carte
+});
+
+// Recevoir les changements de statut
+socket.on('status_change', ({ status }) => {
+  // Mettre à jour l'UI
+});
+
+// [Côté barbier] Envoyer sa position
+socket.emit('send_position', { lat: 48.8566, lng: 2.3522 });
+```
+
+---
+
+## Déploiement (production)
+
+Recommandé : **Railway** ou **Render** (PostgreSQL inclus, gratuit pour démarrer)
 
 ```bash
-npx react-native run-ios
-# ou avec simulateur spécifique
-npx react-native run-ios --simulator="iPhone 15 Pro"
-```
-
-### 3. Metro bundler (si besoin séparé)
-
-```bash
-npx react-native start
+# Variables d'environnement à configurer sur la plateforme
+NODE_ENV=production
+DATABASE_URL=postgresql://...
+PORT=3000
+# + toutes les autres variables du .env.example
 ```
 
 ---
 
-## Pages couvertes
-
-| Page | Description |
-|---|---|
-| Onboarding 1-2-3 | Slides d'introduction avec pagination |
-| Connexion | Email / mot de passe + Google / Apple |
-| Inscription 1 | Identité (prénom, nom, email, téléphone) |
-| Inscription 2 | Profil (Client vs Barbier) + contextes |
-| Inscription 3 | Adresse + géolocalisation |
-| Inscription 4 | Mot de passe + CGU |
-| Accueil | Prochain RDV, barbiers disponibles |
-| Recherche | Barre + filtres + résultats |
-| Profil Barbier | Fiche détaillée, galerie, prestations |
-| Réservation | Service + créneau + lieu |
-| Paiement | Visa / Apple Pay / Google Pay |
-| Tracking | Carte live, ETA, timeline |
-| Avis | Notation + commentaire |
-| Historique | Toutes les prestations |
-| Notifications | Lues / non-lues |
-| Profil | Stats + fidélité Gold |
-| Paramètres | Compte + toggles + déconnexion |
-| Support | Contacts + FAQ accordéon |
-| Barbier Pro | Dashboard + zones + missions |
-| Admin | Stats + graphique + activités |
-
----
-
-## Palettes
-
-- **Or & Noir** — Luxe, palace, VIP (défaut)
-- **Noir & Blanc** — Minimaliste élégant
-- **Bleu Roi & Or** — Prestige royal
-
----
-
-## Roadmap v2
-
-- [ ] Intégration Stripe (paiement réel)
-- [ ] Intégration Google Maps (carte vraie)
-- [ ] WebSocket tracking live
-- [ ] Push Notifications (APNs)
-- [ ] Authentification Firebase
-- [ ] Backend API (Node.js / Express)
-- [ ] App Store submission
-
----
-
-*Projet BLADE — Barber Concierge*
+*BLADE v1.0.0 — Backend API*
