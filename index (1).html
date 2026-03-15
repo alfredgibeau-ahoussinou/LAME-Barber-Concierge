@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BLADE — Barber Concierge</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--a:#B8963E;}
+body{font-family:'DM Sans',sans-serif;background:#0a0a0a;min-height:100vh;padding:20px 12px 48px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.app-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;letter-spacing:.18em;color:#B8963E;}
+.app-sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#444;margin-top:2px;}
+.tg{display:flex;gap:6px;flex-wrap:wrap;}
+.ts{padding:5px 14px;border-radius:20px;border:1px solid;font-size:10px;font-weight:400;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.06em;transition:all .18s;background:transparent;}
+.ts.gold{border-color:#B8963E;color:#B8963E;}.ts.gold.on{background:#B8963E;color:#0c0c0c;}
+.ts.bw{border-color:#555;color:#666;}.ts.bw.on{background:#eee;color:#111;border-color:#eee;}
+.ts.royal{border-color:#2a4aaf;color:#6080cf;}.ts.royal.on{background:#162C7A;color:#C9A84C;border-color:#162C7A;}
+.nav{display:flex;gap:0;margin-bottom:24px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.07);}
+.nav::-webkit-scrollbar{display:none;}
+.nb{padding:8px 12px;font-size:9px;font-weight:500;cursor:pointer;letter-spacing:.09em;text-transform:uppercase;background:transparent;border:none;font-family:'DM Sans',sans-serif;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;color:rgba(255,255,255,.2);transition:color .16s,border-color .16s;}
+.nb.on{border-bottom-color:var(--a);color:var(--a);}
+.nav-label{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.14);padding:10px 8px 4px;white-space:nowrap;align-self:flex-end;font-weight:500;}
+.page{display:none;justify-content:center;}.page.on{display:flex;}
+.phone{width:300px;border-radius:40px;padding:10px;border:1px solid rgba(184,150,62,.32);background:#0c0c0c;}
+.screen{border-radius:31px;overflow:hidden;min-height:640px;display:flex;flex-direction:column;background:#0c0c0c;}
+.notch{width:64px;height:6px;border-radius:10px;margin:0 auto 10px;background:rgba(255,255,255,.08);}
+.hdr{padding:20px 18px 12px;display:flex;align-items:flex-end;justify-content:space-between;background:#0c0c0c;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;letter-spacing:.12em;color:#B8963E;}
+.sub{font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;opacity:.38;color:#f0ece2;}
+.body{flex:1;padding:0 18px 16px;overflow:hidden;}
+.lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin:14px 0 6px;opacity:.32;font-weight:500;color:#f0ece2;}
+.card{border-radius:16px;padding:14px 16px;margin-bottom:10px;background:#141414;border:1px solid rgba(255,255,255,.07);}
+.card-sm{border-radius:12px;padding:11px 14px;margin-bottom:8px;background:#141414;border:1px solid rgba(255,255,255,.07);}
+.hr{height:1px;margin:12px 0;opacity:.08;background:#fff;}
+.btn{width:100%;padding:14px;border-radius:12px;border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;margin-top:2px;background:#B8963E;color:#0c0c0c;}
+.btn-sm{padding:9px 14px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;letter-spacing:.08em;cursor:pointer;background:#B8963E;color:#0c0c0c;}
+.btn-o{width:100%;padding:11px;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;cursor:pointer;background:transparent;margin-top:6px;letter-spacing:.06em;border:1px solid rgba(255,255,255,.12);color:#666;}
+.btm{display:flex;justify-content:space-around;padding:12px 0 8px;margin-top:auto;border-top:1px solid rgba(255,255,255,.06);background:#0c0c0c;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;font-weight:400;cursor:pointer;padding:4px 10px;border-radius:8px;letter-spacing:.06em;opacity:.28;color:#f0ece2;border:none;background:transparent;font-family:'DM Sans',sans-serif;}
+.ni.on{opacity:1;color:#B8963E;}
+.ni-ic{font-size:15px;line-height:1;}
+.av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;flex-shrink:0;background:#1a1508;border:1px solid rgba(184,150,62,.2);color:#B8963E;}
+.tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:400;border:1px solid rgba(184,150,62,.22);letter-spacing:.04em;margin:3px 3px 3px 0;cursor:pointer;opacity:.48;color:#B8963E;background:transparent;}
+.tag.on{opacity:1;border-color:rgba(184,150,62,.6);}
+.inp{width:100%;padding:11px 14px;border-radius:10px;font-size:12px;font-family:'DM Sans',sans-serif;margin-bottom:8px;border:1px solid rgba(255,255,255,.08);font-weight:300;background:#141414;color:#f0ece2;}
+.inp-row{display:flex;gap:6px;}.inp-row .inp{flex:1;}
+.slot{flex-shrink:0;border-radius:10px;padding:9px 12px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,.07);background:#141414;}
+.slot.on{background:#1a1508;border-color:rgba(184,150,62,.5);}
+.slots{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+.slots::-webkit-scrollbar{display:none;}
+.slot-d{font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;opacity:.38;color:#f0ece2;}
+.slot-t{font-size:13px;font-weight:300;font-family:'Cormorant Garamond',serif;color:#B8963E;}
+.slot-s{font-size:8px;margin-top:2px;opacity:.32;color:#f0ece2;}
+.live-d{width:6px;height:6px;border-radius:50%;animation:pulse 1s infinite;flex-shrink:0;background:#B8963E;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.map-b{border-radius:14px;padding:12px;position:relative;min-height:118px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(255,255,255,.06);background:#111;}
+.rh{position:absolute;height:1px;left:0;right:0;top:50%;background:rgba(255,255,255,.06);}
+.rv{position:absolute;width:1px;top:0;bottom:0;left:50%;background:rgba(255,255,255,.06);}
+.pin{position:absolute;bottom:20px;left:52%;}.pin2{position:absolute;top:16px;right:34px;}
+.pc{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid rgba(184,150,62,.4);background:#B8963E;color:#0c0c0c;}
+.pc.dest{background:#1a1a1a;border-color:rgba(255,255,255,.12);color:#888;opacity:.5;}
+.stat-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.sc{border-radius:12px;padding:12px 14px;border:1px solid rgba(255,255,255,.07);background:#141414;}
+.sc-v{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#B8963E;}
+.sc-l{font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;opacity:.32;color:#f0ece2;}
+.tgl{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;margin-bottom:7px;border:1px solid rgba(255,255,255,.07);background:#141414;}
+.tsw{width:32px;height:17px;border-radius:9px;position:relative;cursor:pointer;flex-shrink:0;}
+.tsw.on{background:#B8963E;}.tsw.off{background:#2a2a2a;}
+.tth{width:13px;height:13px;border-radius:50%;position:absolute;top:2px;background:#fff;}
+.tsw.on .tth{left:17px;}.tsw.off .tth{left:2px;}
+.prog{height:2px;border-radius:1px;overflow:hidden;margin-top:8px;background:rgba(255,255,255,.08);}
+.pf{height:100%;border-radius:1px;background:#B8963E;}
+.tl{padding-left:10px;}
+.tli{display:flex;gap:10px;margin-bottom:14px;}
+.tld{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;background:#B8963E;}
+.tld.off{background:transparent;border:1px solid rgba(255,255,255,.2);}
+.tll-w{position:relative;}.tll{position:absolute;left:3px;top:10px;width:1px;bottom:-14px;background:rgba(255,255,255,.12);}
+.row{display:flex;align-items:center;justify-content:space-between;}
+.price{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#B8963E;}
+.big-price{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:#B8963E;}
+.star-r{letter-spacing:2px;color:#B8963E;}
+.check-r{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;margin-bottom:7px;border:1px solid rgba(255,255,255,.07);cursor:pointer;background:#141414;}
+.check-r.on{background:#1a1508;border-color:rgba(184,150,62,.4);}
+.chk{width:17px;height:17px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;border:1px solid rgba(255,255,255,.12);color:transparent;}
+.chk.on{background:#1a1508;border-color:rgba(184,150,62,.5);color:#B8963E;}
+.step-i{display:flex;justify-content:center;gap:5px;margin-bottom:16px;}
+.step-d{width:22px;height:2px;border-radius:1px;background:rgba(255,255,255,.1);}
+.step-d.on{background:#B8963E;}
+.pm{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:11px;margin-bottom:7px;border:1px solid rgba(255,255,255,.07);background:#141414;opacity:.45;}
+.pm.on{background:#1a1508;border-color:rgba(184,150,62,.4);opacity:1;}
+.pm-i{width:30px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;border:1px solid rgba(184,150,62,.3);background:#1a1508;color:#B8963E;}
+.zi{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:10px;margin-bottom:6px;border:1px solid rgba(255,255,255,.07);background:#141414;}
+.zi.off{opacity:.3;}
+.zd{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:#B8963E;}
+.zd.off{background:#555;}
+.badge{padding:3px 9px;border-radius:9px;font-size:9px;font-weight:500;letter-spacing:.06em;background:#1a1508;color:#B8963E;border:1px solid rgba(184,150,62,.25);}
+.badge-green{background:rgba(90,154,90,.12);color:#5a9a5a;border:1px solid rgba(90,154,90,.25);}
+.badge-red{background:rgba(180,60,60,.12);color:#c05050;border:1px solid rgba(180,60,60,.2);}
+.t1{color:#f0ece2;}.t2{color:#666;}.acc{color:#B8963E;}.green{color:#5a9a5a;}.red{color:#c05050;}
+.search-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#141414;margin-bottom:10px;}
+.search-ic{font-size:13px;opacity:.35;color:#f0ece2;}
+.search-txt{font-size:12px;font-weight:300;flex:1;color:#888;}
+.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.fchip{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:10px;border:1px solid rgba(255,255,255,.08);color:#888;background:transparent;cursor:pointer;letter-spacing:.04em;}
+.fchip.on{border-color:rgba(184,150,62,.5);color:#B8963E;background:rgba(184,150,62,.06);}
+.notif-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.notif-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.notif-dot.unread{background:#B8963E;}.notif-dot.read{background:transparent;border:1px solid rgba(255,255,255,.2);}
+.setting-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;}
+.setting-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:#1a1a1a;border:1px solid rgba(255,255,255,.07);}
+.setting-arr{margin-left:auto;opacity:.2;font-size:12px;color:#f0ece2;}
+.faq-item{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.faq-q{font-size:12px;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.faq-a{font-size:11px;font-weight:300;line-height:1.7;margin-top:7px;opacity:.4;color:#f0ece2;}
+.barber-cover{height:80px;border-radius:14px 14px 0 0;background:linear-gradient(135deg,#1a1508,#2a200a);position:relative;display:flex;align-items:flex-end;padding:12px;}
+.profile-av{position:absolute;bottom:-22px;left:16px;width:52px;height:52px;border-radius:50%;background:#1a1508;border:2px solid #0c0c0c;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#B8963E;}
+.gallery-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;}
+.gallery-row::-webkit-scrollbar{display:none;}
+.gallery-img{flex-shrink:0;width:70px;height:70px;border-radius:10px;background:#1a1a1a;border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:20px;opacity:.4;}
+.onb-slide{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px;text-align:center;}
+.onb-dots{display:flex;gap:6px;justify-content:center;margin:18px 0 8px;}
+.onb-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);}
+.onb-dot.on{background:#B8963E;width:18px;border-radius:3px;}
+.admin-tab{display:flex;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.07);}
+.atab{flex:1;padding:8px;text-align:center;font-size:10px;font-weight:500;letter-spacing:.06em;cursor:pointer;background:#141414;color:#666;border:none;font-family:'DM Sans',sans-serif;}
+.atab.on{background:#1a1508;color:#B8963E;}
+.chart-bar-row{display:flex;align-items:flex-end;gap:5px;height:60px;margin-bottom:6px;}
+.chart-bar{flex:1;border-radius:3px 3px 0 0;background:rgba(184,150,62,.2);}
+.chart-bar.hi{background:#B8963E;}
+.chart-labels{display:flex;gap:5px;margin-bottom:12px;}
+.chart-lbl{flex:1;text-align:center;font-size:8px;opacity:.28;color:#f0ece2;}
+/* BW */
+body.bw{background:#f0efe9;}
+body.bw .phone{background:#f8f8f6;border-color:#e0e0e0;}
+body.bw .screen,body.bw .hdr,body.bw .btm{background:#fff;}
+body.bw .logo,body.bw .price,body.bw .big-price,body.bw .sc-v,body.bw .slot-t,body.bw .acc,body.bw .star-r{color:#111;}
+body.bw .card,body.bw .card-sm,body.bw .sc,body.bw .tgl,body.bw .check-r,body.bw .pm,body.bw .zi,body.bw .inp,body.bw .slot,body.bw .search-bar{background:#f5f5f3;border-color:rgba(0,0,0,.08);}
+body.bw .map-b{background:#f2f2f0;border-color:rgba(0,0,0,.07);}
+body.bw .rh,body.bw .rv{background:rgba(0,0,0,.06);}
+body.bw .btn,body.bw .btn-sm{background:#111;color:#fff;}
+body.bw .btm,body.bw .nav{border-color:rgba(0,0,0,.07);}
+body.bw .nb{color:rgba(0,0,0,.2);}.body.bw .nb.on{color:#111;border-bottom-color:#111;}
+body.bw .nb.on{color:#111;border-bottom-color:#111;}
+body.bw .tag{color:#333;border-color:rgba(0,0,0,.16);}.body.bw .tag.on{border-color:rgba(0,0,0,.5);}
+body.bw .tag.on{border-color:rgba(0,0,0,.5);}
+body.bw .live-d,body.bw .tld,body.bw .pf,body.bw .notif-dot.unread{background:#111;}
+body.bw .zd:not(.off){background:#111;}
+body.bw .tsw.on{background:#111;}.body.bw .tsw.off{background:#d0d0d0;}
+body.bw .tsw.off{background:#d0d0d0;}
+body.bw .pc{background:#111;color:#fff;border-color:rgba(0,0,0,.2);}
+body.bw .pc.dest{background:#e0e0e0;color:#555;}
+body.bw .av{background:#111;border-color:transparent;color:#fff;}
+body.bw .badge{background:#f0f0ee;color:#333;border-color:rgba(0,0,0,.1);}
+body.bw .ni{color:#111;}.body.bw .ni.on{color:#111;}
+body.bw .ni.on{color:#111;}
+body.bw .check-r.on{background:#f0f0ee;border-color:rgba(0,0,0,.2);}
+body.bw .chk.on{background:#111;border-color:#111;color:#fff;}
+body.bw .pm.on{background:#eee;border-color:#111;}
+body.bw .slot.on{background:#111;border-color:#111;}
+body.bw .slot.on .slot-t{color:#fff;}
+body.bw .step-d.on{background:#111;}
+body.bw .pm-i{background:#e8e8e6;border-color:rgba(0,0,0,.1);color:#444;}
+body.bw .t1{color:#111;}.body.bw .t2{color:#999;}
+body.bw .t2{color:#999;}
+body.bw .inp{color:#111;}
+body.bw .notch{background:rgba(0,0,0,.08);}
+body.bw .fchip{border-color:rgba(0,0,0,.1);color:#888;}.body.bw .fchip.on{border-color:rgba(0,0,0,.4);color:#111;}
+body.bw .fchip.on{border-color:rgba(0,0,0,.4);color:#111;}
+body.bw .setting-ic{background:#eee;border-color:rgba(0,0,0,.07);}
+body.bw .barber-cover{background:linear-gradient(135deg,#eee,#ddd);}
+body.bw .gallery-img{background:#eee;border-color:rgba(0,0,0,.07);}
+body.bw .admin-tab{border-color:rgba(0,0,0,.08);}
+body.bw .atab{background:#f5f5f3;color:#999;}.body.bw .atab.on{background:#111;color:#fff;}
+body.bw .atab.on{background:#111;color:#fff;}
+body.bw .chart-bar{background:rgba(0,0,0,.1);}.body.bw .chart-bar.hi{background:#111;}
+body.bw .chart-bar.hi{background:#111;}
+body.bw .onb-dot{background:rgba(0,0,0,.12);}.body.bw .onb-dot.on{background:#111;}
+body.bw .onb-dot.on{background:#111;}
+body.bw .sub{color:#999;}.body.bw .nav-label{color:rgba(0,0,0,.12);}
+body.bw .nav-label{color:rgba(0,0,0,.12);}
+/* ROYAL */
+body.royal{background:#060e28;}
+body.royal .phone{background:#08102e;border-color:rgba(201,168,76,.3);}
+body.royal .screen,body.royal .hdr,body.royal .btm{background:#08102e;}
+body.royal .logo,body.royal .price,body.royal .big-price,body.royal .sc-v,body.royal .slot-t,body.royal .acc,body.royal .star-r{color:#C9A84C;}
+body.royal .card,body.royal .card-sm,body.royal .sc,body.royal .tgl,body.royal .check-r,body.royal .pm,body.royal .zi,body.royal .inp,body.royal .slot,body.royal .search-bar{background:#0d1a45;border-color:rgba(255,255,255,.06);}
+body.royal .map-b{background:#0d1a45;border-color:rgba(255,255,255,.06);}
+body.royal .btn,body.royal .btn-sm{background:#C9A84C;color:#08102e;}
+body.royal .btm,body.royal .nav{border-color:rgba(255,255,255,.06);}
+body.royal .nb{color:rgba(255,255,255,.18);}
+body.royal .nb.on{color:#C9A84C;border-bottom-color:#C9A84C;}
+body.royal .tag{color:#C9A84C;border-color:rgba(201,168,76,.2);}
+body.royal .tag.on{border-color:rgba(201,168,76,.6);}
+body.royal .live-d,body.royal .tld,body.royal .pf,body.royal .notif-dot.unread{background:#C9A84C;}
+body.royal .zd:not(.off){background:#C9A84C;}
+body.royal .tsw.on{background:#C9A84C;}.body.royal .tsw.off{background:#1a2a5e;}
+body.royal .tsw.off{background:#1a2a5e;}
+body.royal .pc{background:#C9A84C;color:#08102e;border-color:rgba(201,168,76,.4);}
+body.royal .pc.dest{background:#1a2a5e;color:#aac0ff;opacity:.5;}
+body.royal .av{background:#0d1a45;border-color:rgba(201,168,76,.2);color:#C9A84C;}
+body.royal .badge{background:#0d1a45;color:#C9A84C;border-color:rgba(201,168,76,.25);}
+body.royal .ni.on{color:#C9A84C;}
+body.royal .check-r.on{background:#0c1535;border-color:rgba(201,168,76,.4);}
+body.royal .chk.on{background:#0d1a45;border-color:rgba(201,168,76,.5);color:#C9A84C;}
+body.royal .pm.on{background:#0c1535;border-color:rgba(201,168,76,.4);}
+body.royal .slot.on{background:#0c1535;border-color:rgba(201,168,76,.5);}
+body.royal .step-d.on{background:#C9A84C;}
+body.royal .pm-i{background:#0d1a45;border-color:rgba(201,168,76,.25);color:#C9A84C;}
+body.royal .t1{color:#dde8ff;}.body.royal .t2{color:#6880b8;}
+body.royal .t2{color:#6880b8;}
+body.royal .inp{color:#dde8ff;}
+body.royal .notch{background:rgba(255,255,255,.07);}
+body.royal .fchip{border-color:rgba(255,255,255,.08);color:#6880b8;}
+body.royal .fchip.on{border-color:rgba(201,168,76,.5);color:#C9A84C;}
+body.royal .setting-ic{background:#0d1a45;border-color:rgba(255,255,255,.06);}
+body.royal .barber-cover{background:linear-gradient(135deg,#0d1a45,#162c7a);}
+body.royal .gallery-img{background:#0d1a45;border-color:rgba(255,255,255,.06);}
+body.royal .admin-tab{border-color:rgba(255,255,255,.06);}
+body.royal .atab{background:#0d1a45;color:#6880b8;}
+body.royal .atab.on{background:#0c1535;color:#C9A84C;}
+body.royal .chart-bar{background:rgba(201,168,76,.15);}
+body.royal .chart-bar.hi{background:#C9A84C;}
+body.royal .onb-dot.on{background:#C9A84C;}
+body.royal .sub{color:#6880b8;}
+body.royal .nav-label{color:rgba(255,255,255,.1);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="app-logo">BLADE</div><div class="app-sub">Barber Concierge — Maquette complète</div></div>
+  <div class="tg">
+    <button class="ts gold on" onclick="setTheme('gold')">Or &amp; Noir</button>
+    <button class="ts bw" onclick="setTheme('bw')">Noir &amp; Blanc</button>
+    <button class="ts royal" onclick="setTheme('royal')">Bleu &amp; Or</button>
+  </div>
+</div>
+<div class="nav">
+  <span class="nav-label">Intro</span>
+  <button class="nb on" onclick="goPage('onb1')">Onboarding 1</button>
+  <button class="nb" onclick="goPage('onb2')">Onboarding 2</button>
+  <button class="nb" onclick="goPage('onb3')">Onboarding 3</button>
+  <button class="nb" onclick="goPage('splash')">Splash</button>
+  <span class="nav-label">Auth</span>
+  <button class="nb" onclick="goPage('login')">Connexion</button>
+  <button class="nb" onclick="goPage('sig1')">Inscription 1</button>
+  <button class="nb" onclick="goPage('sig2')">Inscription 2</button>
+  <button class="nb" onclick="goPage('sig3')">Inscription 3</button>
+  <button class="nb" onclick="goPage('sig4')">Inscription 4</button>
+  <span class="nav-label">Client</span>
+  <button class="nb" onclick="goPage('home')">Accueil</button>
+  <button class="nb" onclick="goPage('search')">Recherche</button>
+  <button class="nb" onclick="goPage('barberp')">Profil Barbier</button>
+  <button class="nb" onclick="goPage('booking')">Réservation</button>
+  <button class="nb" onclick="goPage('payment')">Paiement</button>
+  <button class="nb" onclick="goPage('tracking')">Tracking</button>
+  <button class="nb" onclick="goPage('review')">Avis</button>
+  <button class="nb" onclick="goPage('history')">Historique</button>
+  <button class="nb" onclick="goPage('notifs')">Notifications</button>
+  <button class="nb" onclick="goPage('profile')">Profil</button>
+  <button class="nb" onclick="goPage('settings')">Paramètres</button>
+  <button class="nb" onclick="goPage('support')">Support</button>
+  <span class="nav-label">Pro</span>
+  <button class="nb" onclick="goPage('barber')">Barbier Pro</button>
+  <button class="nb" onclick="goPage('admin')">Admin</button>
+</div>
+
+<!-- ONBOARDING 1 -->
+<div class="page on" id="p-onb1"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="onb-slide">
+    <div style="font-size:36px;margin-bottom:18px;opacity:.6;">✦</div>
+    <div class="logo" style="font-size:32px;letter-spacing:.2em;margin-bottom:8px;">BLADE</div>
+    <div style="font-size:8px;letter-spacing:.28em;text-transform:uppercase;opacity:.28;margin-bottom:24px;" class="t1">Barber Concierge</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;line-height:1.3;margin-bottom:10px;" class="t1">Votre barbier<br><span style="font-style:italic;opacity:.45;">à votre porte</span></div>
+    <div style="font-size:11px;font-weight:300;opacity:.35;line-height:1.8;" class="t1">Un barbier certifié se déplace chez vous, en hôtel, au bureau ou pour vos événements.</div>
+    <div class="onb-dots"><div class="onb-dot on"></div><div class="onb-dot"></div><div class="onb-dot"></div></div>
+  </div>
+  <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:7px;">
+    <button class="btn" onclick="goPage('onb2')">Suivant</button>
+    <button class="btn-o" onclick="goPage('login')">J'ai déjà un compte</button>
+  </div>
+</div></div></div>
+
+<!-- ONBOARDING 2 -->
+<div class="page" id="p-onb2"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="onb-slide">
+    <div style="font-size:36px;margin-bottom:18px;opacity:.6;">⊙</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;line-height:1.3;margin-bottom:10px;" class="t1">Réservez &amp;<br><span style="font-style:italic;opacity:.45;">suivez en direct</span></div>
+    <div style="font-size:11px;font-weight:300;opacity:.35;line-height:1.8;" class="t1">Choisissez votre créneau, payez en ligne et suivez l'arrivée de votre barbier en temps réel.</div>
+    <div class="onb-dots"><div class="onb-dot"></div><div class="onb-dot on"></div><div class="onb-dot"></div></div>
+  </div>
+  <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:7px;">
+    <button class="btn" onclick="goPage('onb3')">Suivant</button>
+    <div style="text-align:center;font-size:10px;opacity:.22;cursor:pointer;" class="t1" onclick="goPage('login')">Passer</div>
+  </div>
+</div></div></div>
+
+<!-- ONBOARDING 3 -->
+<div class="page" id="p-onb3"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="onb-slide">
+    <div style="font-size:36px;margin-bottom:18px;opacity:.6;">☆</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;line-height:1.3;margin-bottom:10px;" class="t1">Palace, Mariage,<br><span style="font-style:italic;opacity:.45;">Partout</span></div>
+    <div style="font-size:11px;font-weight:300;opacity:.35;line-height:1.8;" class="t1">Hôtel 5 étoiles, particulier, EVG, aéroport ou bureau — BLADE s'adapte à chaque contexte.</div>
+    <div style="margin-top:14px;"><span class="tag on">Palace</span><span class="tag on">Hôtel</span><span class="tag on">Mariage</span><span class="tag on">EVG</span><span class="tag on">Aéroport</span></div>
+    <div class="onb-dots"><div class="onb-dot"></div><div class="onb-dot"></div><div class="onb-dot on"></div></div>
+  </div>
+  <div style="padding:0 18px 24px;display:flex;flex-direction:column;gap:7px;">
+    <button class="btn" onclick="goPage('sig1')">Créer mon compte</button>
+    <button class="btn-o" onclick="goPage('login')">Se connecter</button>
+  </div>
+</div></div></div>
+
+<!-- SPLASH -->
+<div class="page" id="p-splash"><div class="phone"><div class="notch"></div><div class="screen">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px 30px;text-align:center;">
+    <div style="width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(184,150,62,.2);margin-bottom:26px;"><span class="acc" style="font-size:20px;font-family:'Cormorant Garamond',serif;font-weight:300;">✦</span></div>
+    <div class="logo" style="font-size:38px;letter-spacing:.2em;">BLADE</div>
+    <div class="sub" style="font-size:8px;letter-spacing:.3em;margin-top:5px;">BARBER CONCIERGE</div>
+    <div class="hr" style="width:32px;margin:20px auto;"></div>
+    <div style="font-size:11px;line-height:1.9;font-weight:300;opacity:.35;" class="t1">Votre barbier premium<br>où que vous soyez</div>
+    <div style="margin-top:16px;"><span class="tag on">Palace</span><span class="tag on">Hôtel</span><span class="tag on">Mariage</span><span class="tag on">EVG</span><span class="tag on">Aéroport</span></div>
+    <button class="btn" style="margin-top:28px;" onclick="goPage('login')">Commencer</button>
+    <button class="btn-o" onclick="goPage('sig1')">Créer un compte</button>
+  </div>
+</div></div></div>
+
+<!-- LOGIN -->
+<div class="page" id="p-login"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Connexion</div></div></div>
+  <div class="body">
+    <div style="margin-bottom:20px;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;line-height:1.1;" class="t1">Bon retour<br><span style="opacity:.3;font-style:italic;" class="t1">parmi nous</span></div></div>
+    <div class="lbl">Email</div><div class="inp">alexandre@hotel.com</div>
+    <div class="lbl">Mot de passe</div><div class="inp">••••••••</div>
+    <div class="row" style="margin-bottom:18px;"><span style="font-size:11px;" class="t2">Se souvenir</span><span class="acc" style="font-size:11px;font-weight:500;cursor:pointer;">Oublié ?</span></div>
+    <button class="btn" onclick="goPage('home')">Se connecter</button>
+    <div class="hr" style="margin:16px 0;"></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div class="card-sm" style="flex:1;text-align:center;padding:10px;cursor:pointer;margin-bottom:0;"><div style="font-size:16px;" class="t1">G</div><div style="font-size:9px;opacity:.3;margin-top:3px;" class="t2">Google</div></div>
+      <div class="card-sm" style="flex:1;text-align:center;padding:10px;cursor:pointer;margin-bottom:0;"><div style="font-size:16px;" class="t1"></div><div style="font-size:9px;opacity:.3;margin-top:3px;" class="t2">Apple</div></div>
+    </div>
+    <div style="text-align:center;font-size:11px;" class="t2">Pas de compte ? <span class="acc" style="font-weight:500;cursor:pointer;" onclick="goPage('sig1')">S'inscrire →</span></div>
+    <div style="text-align:center;font-size:11px;margin-top:8px;" class="t2">Barbier Pro ? <span class="acc" style="font-weight:500;cursor:pointer;" onclick="goPage('barber')">Espace pro →</span></div>
+  </div>
+</div></div></div>
+
+<!-- SIGNUP 1 -->
+<div class="page" id="p-sig1"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Inscription</div></div><div style="font-size:10px;opacity:.28;" class="t2">1/4</div></div>
+  <div class="body">
+    <div class="step-i"><div class="step-d on"></div><div class="step-d"></div><div class="step-d"></div><div class="step-d"></div></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:3px;" class="t1">Votre identité</div>
+    <div style="font-size:11px;margin-bottom:16px;" class="t2">Étape 1 — Informations personnelles</div>
+    <div class="lbl">Prénom &amp; Nom</div>
+    <div class="inp-row"><div class="inp">Alexandre</div><div class="inp">Martin</div></div>
+    <div class="lbl">Email</div><div class="inp">alex@email.com</div>
+    <div class="lbl">Téléphone</div><div class="inp">+33 6 12 34 56 78</div>
+    <div class="lbl">Date de naissance</div><div class="inp">15 / 04 / 1992</div>
+    <button class="btn" onclick="goPage('sig2')">Continuer</button>
+    <div style="text-align:center;font-size:11px;margin-top:10px;" class="t2">Déjà un compte ? <span class="acc" style="cursor:pointer;" onclick="goPage('login')">Se connecter</span></div>
+  </div>
+</div></div></div>
+
+<!-- SIGNUP 2 -->
+<div class="page" id="p-sig2"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Inscription</div></div><div style="font-size:10px;opacity:.28;" class="t2">2/4</div></div>
+  <div class="body">
+    <div class="step-i"><div class="step-d on"></div><div class="step-d on"></div><div class="step-d"></div><div class="step-d"></div></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:3px;" class="t1">Votre profil</div>
+    <div style="font-size:11px;margin-bottom:16px;" class="t2">Étape 2 — Vous êtes</div>
+    <div class="check-r on" style="margin-bottom:10px;"><div class="chk on">✓</div><div><div style="font-size:13px;font-weight:400;" class="t1">Client</div><div style="font-size:10px;margin-top:2px;" class="t2">Je cherche un barbier à domicile</div></div></div>
+    <div class="check-r" style="margin-bottom:16px;opacity:.4;" onclick="goPage('barber')"><div class="chk"></div><div><div style="font-size:13px;" class="t2">Barbier Pro</div><div style="font-size:10px;margin-top:2px;" class="t2">Je propose mes services à domicile</div></div></div>
+    <div class="lbl">Contexte habituel</div>
+    <div><span class="tag on">Hôtel</span><span class="tag">Palace</span><span class="tag on">Particulier</span><span class="tag">Mariage</span><span class="tag">EVG</span><span class="tag">Aéroport</span><span class="tag on">Bureau</span></div>
+    <div style="margin-top:14px;"><button class="btn" onclick="goPage('sig3')">Continuer</button></div>
+  </div>
+</div></div></div>
+
+<!-- SIGNUP 3 -->
+<div class="page" id="p-sig3"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Inscription</div></div><div style="font-size:10px;opacity:.28;" class="t2">3/4</div></div>
+  <div class="body">
+    <div class="step-i"><div class="step-d on"></div><div class="step-d on"></div><div class="step-d on"></div><div class="step-d"></div></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:3px;" class="t1">Votre adresse</div>
+    <div style="font-size:11px;margin-bottom:16px;" class="t2">Étape 3 — Localisation</div>
+    <div class="lbl">Adresse principale</div><div class="inp">12 avenue Montaigne</div>
+    <div class="lbl">Ville &amp; Code postal</div>
+    <div class="inp-row"><div class="inp">Paris</div><div class="inp" style="max-width:90px;">75008</div></div>
+    <div class="lbl">Pays</div><div class="inp">France</div>
+    <div class="lbl">Adresse secondaire (facultatif)</div><div class="inp" style="opacity:.35;">Hôtel, bureau…</div>
+    <div class="tgl" style="margin-top:10px;">
+      <div><div style="font-size:12px;font-weight:400;" class="t1">Utiliser ma géolocalisation</div><div style="font-size:10px;margin-top:2px;" class="t2">Pour les réservations rapides</div></div>
+      <div class="tsw on"><div class="tth"></div></div>
+    </div>
+    <button class="btn" style="margin-top:10px;" onclick="goPage('sig4')">Continuer</button>
+  </div>
+</div></div></div>
+
+<!-- SIGNUP 4 -->
+<div class="page" id="p-sig4"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Inscription</div></div><div style="font-size:10px;opacity:.28;" class="t2">4/4</div></div>
+  <div class="body">
+    <div class="step-i"><div class="step-d on"></div><div class="step-d on"></div><div class="step-d on"></div><div class="step-d on"></div></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:3px;" class="t1">Sécurité</div>
+    <div style="font-size:11px;margin-bottom:16px;" class="t2">Étape 4 — Mot de passe</div>
+    <div class="lbl">Mot de passe</div><div class="inp">••••••••••</div>
+    <div class="lbl">Confirmer</div><div class="inp">••••••••••</div>
+    <div style="padding:10px 14px;border-radius:10px;background:rgba(184,150,62,.05);border:1px solid rgba(184,150,62,.12);margin-bottom:12px;">
+      <div style="font-size:10px;line-height:1.8;opacity:.45;" class="t1">✓ &nbsp;8 caractères minimum<br>✓ &nbsp;Une majuscule<br>✓ &nbsp;Un chiffre</div>
+    </div>
+    <div class="check-r on" style="margin-bottom:8px;"><div class="chk on">✓</div><div style="font-size:11px;font-weight:300;opacity:.5;" class="t1">J'accepte les <span class="acc">CGU</span> et la <span class="acc">politique de confidentialité</span></div></div>
+    <div class="check-r" style="opacity:.4;"><div class="chk"></div><div style="font-size:11px;font-weight:300;" class="t2">Recevoir les offres et nouveautés</div></div>
+    <button class="btn" style="margin-top:10px;" onclick="goPage('home')">Créer mon compte ✦</button>
+  </div>
+</div></div></div>
+
+<!-- HOME -->
+<div class="page" id="p-home"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr">
+    <div><div class="logo">BLADE</div><div class="sub">Bonjour, Alexandre</div></div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div style="position:relative;cursor:pointer;" onclick="goPage('notifs')"><div style="font-size:18px;opacity:.45;" class="t1">◎</div><div style="position:absolute;top:-1px;right:-1px;width:7px;height:7px;border-radius:50%;background:#B8963E;"></div></div>
+      <div class="av" onclick="goPage('profile')">A</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="lbl">Prochain rendez-vous</div>
+    <div class="card"><div class="row"><div><div style="font-size:13px;font-weight:400;" class="t1">Coupe + Barbe</div><div style="font-size:11px;font-weight:300;margin-top:3px;opacity:.36;" class="t1">Jean-Marc V. · Lun. 16 mars · 11h30</div><div style="font-size:10px;opacity:.26;margin-top:1px;" class="t1">Hôtel George V, Suite 412</div></div><div style="text-align:right;"><div class="price">85€</div><div style="display:flex;align-items:center;gap:4px;margin-top:5px;justify-content:flex-end;"><div class="live-d"></div><span style="font-size:9px;letter-spacing:.08em;" class="acc">Confirmé</span></div></div></div>
+    <button class="btn" style="margin-top:12px;padding:10px;font-size:10px;" onclick="goPage('tracking')">Suivre mon barbier</button></div>
+    <div class="lbl">Contexte</div>
+    <div><span class="tag on">Hôtel</span><span class="tag">Palace</span><span class="tag">Mariage</span><span class="tag">EVG</span><span class="tag">Aéroport</span><span class="tag">Bureau</span></div>
+    <div class="lbl" style="margin-top:14px;">Barbiers disponibles</div>
+    <div class="card" style="cursor:pointer;" onclick="goPage('barberp')"><div style="display:flex;gap:10px;align-items:center;"><div class="av">J</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Jean-Marc V.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Paris 8e · 3.2 km</div><div class="star-r" style="font-size:11px;opacity:.6;margin-top:2px;">★★★★★</div></div><div class="price">85€</div></div></div>
+    <div class="card" style="cursor:pointer;" onclick="goPage('barberp')"><div style="display:flex;gap:10px;align-items:center;"><div class="av">R</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Rachid B.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Paris 16e · 5.1 km</div><div class="star-r" style="font-size:11px;opacity:.6;margin-top:2px;">★★★★★</div></div><div class="price">90€</div></div></div>
+  </div>
+  <div class="btm">
+    <button class="ni on" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- SEARCH -->
+<div class="page" id="p-search"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Recherche</div></div></div>
+  <div class="body">
+    <div class="search-bar"><div class="search-ic">◎</div><div class="search-txt">Barbier, zone, prestation…</div><div style="font-size:10px;opacity:.32;" class="acc">⊞</div></div>
+    <div class="filter-row"><div class="fchip on">Tous</div><div class="fchip">Hôtel 5*</div><div class="fchip">Mariage</div><div class="fchip">Aéroport</div><div class="fchip">Bureau</div><div class="fchip">Dispo</div></div>
+    <div class="row" style="margin-bottom:10px;"><div style="font-size:10px;opacity:.28;" class="t1">12 barbiers trouvés</div><div style="font-size:10px;" class="acc">Trier ↕</div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:8px;" onclick="goPage('barberp')"><div style="display:flex;gap:10px;align-items:center;"><div class="av">J</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Jean-Marc V.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Paris 8e · 3.2 km</div><div class="star-r" style="font-size:10px;opacity:.6;margin-top:2px;">★★★★★ <span class="t2" style="font-size:9px;">(128)</span></div></div><div style="text-align:right;"><div class="price">85€</div><div class="badge" style="margin-top:4px;display:inline-block;">Dispo</div></div></div><div style="display:flex;gap:4px;margin-top:8px;"><span class="tag on" style="font-size:9px;padding:2px 7px;margin:0;">Hôtel</span><span class="tag on" style="font-size:9px;padding:2px 7px;margin:0;">Mariage</span><span class="tag on" style="font-size:9px;padding:2px 7px;margin:0;">EVG</span></div></div>
+    <div class="card" style="cursor:pointer;margin-bottom:8px;" onclick="goPage('barberp')"><div style="display:flex;gap:10px;align-items:center;"><div class="av">R</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Rachid B.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Paris 16e · 5.1 km</div><div class="star-r" style="font-size:10px;opacity:.6;margin-top:2px;">★★★★★ <span class="t2" style="font-size:9px;">(94)</span></div></div><div style="text-align:right;"><div class="price">90€</div><div class="badge" style="margin-top:4px;display:inline-block;">Dispo</div></div></div></div>
+    <div class="card" style="cursor:pointer;" onclick="goPage('barberp')"><div style="display:flex;gap:10px;align-items:center;"><div class="av">K</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Kévin D.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Paris 17e · 7.4 km</div><div class="star-r" style="font-size:10px;opacity:.6;margin-top:2px;">★★★★☆ <span class="t2" style="font-size:9px;">(67)</span></div></div><div style="text-align:right;"><div class="price">75€</div><div class="badge badge-green" style="margin-top:4px;display:inline-block;">Ce soir</div></div></div></div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni on"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- BARBER PROFILE -->
+<div class="page" id="p-barberp"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="barber-cover"><div class="badge" style="margin-left:auto;">★ 4.9</div></div>
+  <div style="padding:28px 18px 0;position:relative;background:#0c0c0c;">
+    <div class="profile-av">J</div>
+    <div style="margin-left:70px;"><div style="font-size:14px;font-weight:400;" class="t1">Jean-Marc Villeneuve</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Barbier certifié · 8 ans · Paris</div><div class="badge badge-green" style="display:inline-block;margin-top:4px;">Disponible</div></div>
+  </div>
+  <div class="body" style="padding-top:12px;">
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <div class="sc" style="flex:1;text-align:center;padding:9px 6px;"><div class="sc-v" style="font-size:20px;">128</div><div class="sc-l">Clients</div></div>
+      <div class="sc" style="flex:1;text-align:center;padding:9px 6px;"><div class="sc-v" style="font-size:20px;">4.9</div><div class="sc-l">Note</div></div>
+      <div class="sc" style="flex:1;text-align:center;padding:9px 6px;"><div class="sc-v" style="font-size:20px;">8</div><div class="sc-l">Ans exp.</div></div>
+    </div>
+    <div class="lbl">Spécialités</div>
+    <div><span class="tag on">Coupe</span><span class="tag on">Barbe</span><span class="tag on">Mariage</span><span class="tag on">Afro</span><span class="tag">Dégradé</span></div>
+    <div class="lbl" style="margin-top:12px;">Galerie</div>
+    <div class="gallery-row"><div class="gallery-img">✂</div><div class="gallery-img">✦</div><div class="gallery-img">✂</div><div class="gallery-img">✦</div></div>
+    <div class="lbl">Prestations</div>
+    <div class="card-sm"><div class="row"><div style="font-size:12px;" class="t1">Coupe + Barbe</div><div class="price" style="font-size:16px;">85€</div></div><div style="font-size:10px;opacity:.28;margin-top:2px;" class="t2">45 min</div></div>
+    <div class="card-sm"><div class="row"><div style="font-size:12px;" class="t1">Coupe seule</div><div class="price" style="font-size:16px;">55€</div></div><div style="font-size:10px;opacity:.28;margin-top:2px;" class="t2">30 min</div></div>
+    <button class="btn" style="margin-top:8px;" onclick="goPage('booking')">Réserver ce barbier</button>
+  </div>
+</div></div></div>
+
+<!-- BOOKING -->
+<div class="page" id="p-booking"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Réservation</div></div><div class="price" style="font-size:18px;">85€</div></div>
+  <div class="body">
+    <div class="card" style="margin-bottom:12px;"><div style="display:flex;gap:10px;align-items:center;"><div class="av">J</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Jean-Marc V.</div><div style="font-size:10px;opacity:.3;margin-top:2px;" class="t2">Certifié · 8 ans · Paris</div></div><div class="star-r" style="font-size:11px;opacity:.6;">★★★★★</div></div></div>
+    <div class="lbl">Prestation</div>
+    <div class="check-r on"><div class="chk on">✓</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Coupe + Barbe</div><div style="font-size:10px;opacity:.3;" class="t2">45 min</div></div><div class="price" style="font-size:16px;">85€</div></div>
+    <div class="check-r" style="opacity:.4;"><div class="chk"></div><div style="flex:1;"><div style="font-size:12px;" class="t2">Coupe seule</div><div style="font-size:10px;opacity:.3;" class="t2">30 min</div></div><div class="price" style="font-size:16px;opacity:.5;">55€</div></div>
+    <div class="check-r" style="opacity:.4;"><div class="chk"></div><div style="flex:1;"><div style="font-size:12px;" class="t2">Barbe seule</div><div style="font-size:10px;opacity:.3;" class="t2">30 min</div></div><div class="price" style="font-size:16px;opacity:.5;">40€</div></div>
+    <div class="lbl">Créneau</div>
+    <div class="slots"><div class="slot"><div class="slot-d">lun</div><div class="slot-t">09:00</div><div class="slot-s">libre</div></div><div class="slot on"><div class="slot-d">lun</div><div class="slot-t">11:30</div><div class="slot-s">libre</div></div><div class="slot"><div class="slot-d">mar</div><div class="slot-t">14:00</div><div class="slot-s">libre</div></div><div class="slot"><div class="slot-d">mer</div><div class="slot-t">16:30</div><div class="slot-s">libre</div></div></div>
+    <div class="lbl" style="margin-top:12px;">Lieu</div>
+    <div class="inp" style="font-size:11px;font-weight:300;">Hôtel George V — Suite 412</div>
+    <div class="hr"></div>
+    <div class="row"><div style="font-size:11px;opacity:.3;" class="t2">Total</div><div class="big-price">85€</div></div>
+    <button class="btn" style="margin-top:10px;" onclick="goPage('payment')">Réserver &amp; Payer</button>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni on"><div class="ni-ic">◎</div><div>Réserver</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- PAYMENT -->
+<div class="page" id="p-payment"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Paiement</div></div><div style="font-size:9px;opacity:.28;letter-spacing:.08em;" class="t2">SSL ✓</div></div>
+  <div class="body">
+    <div class="card" style="margin-bottom:16px;"><div style="font-size:11px;opacity:.26;margin-bottom:8px;" class="t2">Récapitulatif</div><div style="font-size:13px;font-weight:400;" class="t1">Coupe + Barbe · Jean-Marc V.</div><div style="font-size:11px;opacity:.3;margin-top:3px;" class="t2">Lundi 16 mars · 11h30 · Hôtel George V</div><div class="hr"></div><div class="row"><div style="font-size:11px;opacity:.28;" class="t2">Total TTC</div><div class="big-price">85€</div></div></div>
+    <div class="lbl">Mode de paiement</div>
+    <div class="pm on"><div class="pm-i">VISA</div><div style="flex:1;font-size:12px;font-weight:400;" class="t1">•••• 4242</div><div style="font-size:11px;opacity:.5;" class="acc">✓</div></div>
+    <div class="pm"><div class="pm-i"></div><div style="flex:1;font-size:12px;" class="t2">Apple Pay</div></div>
+    <div class="pm"><div class="pm-i"></div><div style="flex:1;font-size:12px;" class="t2">Google Pay</div></div>
+    <div style="font-size:10px;opacity:.2;text-align:center;margin:14px 0;line-height:1.7;" class="t2">Remboursement intégral si annulation<br>avant 2h du rendez-vous.</div>
+    <button class="btn" onclick="goPage('tracking')">Confirmer le paiement</button>
+  </div>
+</div></div></div>
+
+<!-- TRACKING -->
+<div class="page" id="p-tracking"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Tracking en direct</div></div><div style="display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.1em;" class="acc"><div class="live-d"></div>LIVE</div></div>
+  <div class="body">
+    <div class="card" style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div class="av">J</div><div style="flex:1;"><div style="font-size:13px;font-weight:400;" class="t1">Jean-Marc V.</div><div style="font-size:11px;opacity:.3;margin-top:2px;" class="t2">En route · RDV 11h30</div></div><div style="font-size:10px;opacity:.26;text-align:right;" class="t2">Suite 412<br>George V</div></div>
+    <div class="map-b"><div class="rh"></div><div class="rv"></div><div class="pin"><div class="pc">✦</div></div><div class="pin2"><div class="pc dest">⌂</div></div><div style="position:absolute;top:8px;left:10px;display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.1em;opacity:.42;" class="acc"><div class="live-d"></div>EN ROUTE</div></div>
+    <div class="row" style="gap:8px;margin-bottom:10px;">
+      <div class="card" style="flex:1;text-align:center;padding:12px 8px;margin-bottom:0;"><div style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;opacity:.26;margin-bottom:4px;" class="t2">Arrivée</div><div class="price" style="font-size:24px;">28 min</div></div>
+      <div class="card" style="flex:1;text-align:center;padding:12px 8px;margin-bottom:0;"><div style="font-size:8px;letter-spacing:.12em;text-transform:uppercase;opacity:.26;margin-bottom:4px;" class="t2">Distance</div><div class="price" style="font-size:24px;">4.2 km</div></div>
+    </div>
+    <div class="lbl">Statut</div>
+    <div class="tl"><div class="tli"><div class="tld"></div><div class="tll-w"><div class="tll"></div></div><div><div style="font-size:12px;font-weight:400;" class="t1">Réservation confirmée</div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">85€ reçus</div></div></div><div class="tli"><div class="tld"></div><div class="tll-w"><div class="tll"></div></div><div><div style="font-size:12px;font-weight:400;" class="t1">Barbier en route</div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">Tracking activé · 30 min</div></div></div><div class="tli" style="opacity:.24;"><div class="tld off"></div><div><div style="font-size:12px;" class="t2">Prestation</div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">11h30 · Suite 412</div></div></div></div>
+    <div style="font-size:10px;opacity:.18;text-align:center;margin-top:10px;line-height:1.7;font-weight:300;" class="t2">Localisation partagée 30 min avant le RDV<br>uniquement — vie privée protégée.</div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni on"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- REVIEW -->
+<div class="page" id="p-review"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Votre avis</div></div><div style="font-size:9px;letter-spacing:.1em;" class="green">Terminé ✓</div></div>
+  <div class="body">
+    <div style="text-align:center;padding:10px 0 18px;"><div class="av" style="width:50px;height:50px;font-size:20px;margin:0 auto 10px;">J</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;" class="t1">Jean-Marc V.</div><div style="font-size:11px;opacity:.26;margin-top:3px;" class="t2">Lundi 16 mars · Coupe + Barbe</div></div>
+    <div style="text-align:center;margin-bottom:18px;"><div class="lbl" style="margin-bottom:10px;">Note</div><div style="display:flex;justify-content:center;gap:12px;"><span style="font-size:28px;cursor:pointer;" class="star-r">★</span><span style="font-size:28px;cursor:pointer;" class="star-r">★</span><span style="font-size:28px;cursor:pointer;" class="star-r">★</span><span style="font-size:28px;cursor:pointer;" class="star-r">★</span><span style="font-size:28px;cursor:pointer;opacity:.14;" class="t2">★</span></div><div style="font-size:11px;opacity:.26;margin-top:6px;" class="t2">4 / 5 — Très bien</div></div>
+    <div class="lbl">Commentaire</div>
+    <div class="inp" style="min-height:64px;font-size:11px;font-weight:300;line-height:1.7;">Prestation impeccable, très professionnel et ponctuel.</div>
+    <button class="btn" style="margin-top:4px;" onclick="goPage('home')">Publier mon avis</button>
+    <div class="hr" style="margin:14px 0;"></div>
+    <div class="lbl">Avis récents</div>
+    <div class="card" style="margin-bottom:8px;"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Alexandre M.</div><div class="star-r" style="font-size:10px;opacity:.6;">★★★★★</div></div><div style="font-size:11px;opacity:.26;margin-top:5px;font-weight:300;line-height:1.6;" class="t1">Impeccable, ponctuel. Parfait avant un meeting.</div></div>
+    <div class="card"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Sophie L.</div><div class="star-r" style="font-size:10px;opacity:.6;">★★★★★</div></div><div style="font-size:11px;opacity:.26;margin-top:5px;font-weight:300;line-height:1.6;" class="t1">Tous les garçons d'honneur ravis pour notre mariage.</div></div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- HISTORY -->
+<div class="page" id="p-history"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Historique</div></div></div>
+  <div class="body">
+    <div class="lbl">Mars 2025</div>
+    <div class="card" style="margin-bottom:8px;cursor:pointer;" onclick="goPage('review')"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Coupe + Barbe</div><div class="price" style="font-size:16px;">85€</div></div><div style="font-size:10px;opacity:.26;margin-top:3px;" class="t2">Jean-Marc V. · Lun. 16 mars · Hôtel George V</div><div class="row" style="margin-top:7px;"><div class="star-r" style="font-size:10px;opacity:.6;">★★★★★</div><div style="font-size:9px;" class="green">Noté</div></div></div>
+    <div class="card" style="margin-bottom:8px;"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Coupe seule</div><div class="price" style="font-size:16px;">55€</div></div><div style="font-size:10px;opacity:.26;margin-top:3px;" class="t2">Rachid B. · Sam. 8 mars · Bureau</div><div class="row" style="margin-top:7px;"><div class="star-r" style="font-size:10px;opacity:.6;">★★★★☆</div><div style="font-size:9px;" class="green">Noté</div></div></div>
+    <div class="lbl">Février 2025</div>
+    <div class="card" style="margin-bottom:8px;"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Coupe + Barbe</div><div class="price" style="font-size:16px;">85€</div></div><div style="font-size:10px;opacity:.26;margin-top:3px;" class="t2">Jean-Marc V. · Ven. 21 fév · Mariage</div><div class="row" style="margin-top:7px;"><div class="star-r" style="font-size:10px;opacity:.6;">★★★★★</div><div style="font-size:9px;" class="green">Noté</div></div></div>
+    <div class="card"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Barbe seule</div><div class="price" style="font-size:16px;">40€</div></div><div style="font-size:10px;opacity:.26;margin-top:3px;" class="t2">Jean-Marc V. · Mer. 5 fév · Aéroport CDG</div><div class="row" style="margin-top:7px;"><div class="star-r" style="font-size:10px;opacity:.6;">★★★★★</div><div style="font-size:9px;" class="green">Noté</div></div></div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni on" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- NOTIFICATIONS -->
+<div class="page" id="p-notifs"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Notifications</div></div><div style="font-size:10px;opacity:.3;cursor:pointer;" class="acc">Tout lire</div></div>
+  <div class="body">
+    <div class="lbl">Aujourd'hui</div>
+    <div class="notif-item"><div class="notif-dot unread"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Jean-Marc est en route</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">Votre barbier arrive dans 28 min. Tracking activé.</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Il y a 5 min</div></div></div>
+    <div class="notif-item"><div class="notif-dot unread"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Paiement confirmé</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">85€ débités — Coupe + Barbe · Lundi 16 mars.</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Il y a 2h</div></div></div>
+    <div class="notif-item"><div class="notif-dot unread"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Réservation acceptée</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">Jean-Marc V. a validé votre mission du 16 mars.</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Il y a 3h</div></div></div>
+    <div class="lbl">Cette semaine</div>
+    <div class="notif-item" style="opacity:.42;"><div class="notif-dot read"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Rappel RDV demain</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">N'oubliez pas votre RDV lundi 16 mars à 11h30.</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Hier</div></div></div>
+    <div class="notif-item" style="opacity:.42;"><div class="notif-dot read"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Nouveau barbier disponible</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">Kévin D. est disponible dans votre zone.</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Lun. 10 mars</div></div></div>
+    <div class="notif-item" style="opacity:.42;"><div class="notif-dot read"></div><div><div style="font-size:12px;font-weight:400;" class="t1">Laissez votre avis</div><div style="font-size:11px;opacity:.32;margin-top:2px;font-weight:300;line-height:1.6;" class="t1">Comment s'est passée votre prestation du 8 mars ?</div><div style="font-size:9px;opacity:.22;margin-top:3px;" class="t2">Sam. 8 mars</div></div></div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni on"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni" onclick="goPage('profile')"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- PROFILE -->
+<div class="page" id="p-profile"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div style="display:flex;align-items:center;gap:12px;"><div class="av" style="width:44px;height:44px;font-size:18px;">A</div><div><div style="font-size:14px;font-weight:400;" class="t1">Alexandre Martin</div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">Membre Gold</div></div></div></div>
+  <div class="body">
+    <div class="stat-g"><div class="sc"><div class="sc-v">12</div><div class="sc-l">Prestations</div></div><div class="sc"><div class="sc-v">4.9</div><div class="sc-l">Note moy.</div></div><div class="sc"><div class="sc-v">980€</div><div class="sc-l">Dépenses</div></div><div class="sc"><div class="sc-v">8</div><div class="sc-l">Avis laissés</div></div></div>
+    <div class="lbl">Fidélité Gold</div>
+    <div class="card"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">980 pts</div><div style="font-size:10px;opacity:.26;" class="t2">Platinum à 1300 pts</div></div><div class="prog"><div class="pf" style="width:75%;"></div></div></div>
+    <div class="lbl">Compte</div>
+    <div class="setting-row" onclick="goPage('settings')"><div class="setting-ic">⚙</div><div style="font-size:12px;flex:1;" class="t1">Paramètres</div><div class="setting-arr">›</div></div>
+    <div class="setting-row" onclick="goPage('notifs')"><div class="setting-ic">◈</div><div style="font-size:12px;flex:1;" class="t1">Notifications</div><div class="setting-arr">›</div></div>
+    <div class="setting-row" onclick="goPage('history')"><div class="setting-ic">☰</div><div style="font-size:12px;flex:1;" class="t1">Historique</div><div class="setting-arr">›</div></div>
+    <div class="setting-row" onclick="goPage('support')"><div class="setting-ic">?</div><div style="font-size:12px;flex:1;" class="t1">Support &amp; Aide</div><div class="setting-arr">›</div></div>
+  </div>
+  <div class="btm">
+    <button class="ni" onclick="goPage('home')"><div class="ni-ic">⌂</div><div>Accueil</div></button>
+    <button class="ni" onclick="goPage('search')"><div class="ni-ic">◎</div><div>Recherche</div></button>
+    <button class="ni" onclick="goPage('tracking')"><div class="ni-ic">⊙</div><div>Tracking</div></button>
+    <button class="ni" onclick="goPage('notifs')"><div class="ni-ic">◈</div><div>Notifs</div></button>
+    <button class="ni on"><div class="ni-ic">☆</div><div>Profil</div></button>
+  </div>
+</div></div></div>
+
+<!-- SETTINGS -->
+<div class="page" id="p-settings"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Paramètres</div></div></div>
+  <div class="body">
+    <div class="lbl">Compte</div>
+    <div class="setting-row"><div class="setting-ic">◎</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Modifier le profil</div><div style="font-size:10px;opacity:.26;margin-top:1px;" class="t2">Nom, email, téléphone</div></div><div class="setting-arr">›</div></div>
+    <div class="setting-row"><div class="setting-ic">🔒</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Mot de passe</div><div style="font-size:10px;opacity:.26;margin-top:1px;" class="t2">Modifier le mot de passe</div></div><div class="setting-arr">›</div></div>
+    <div class="setting-row"><div class="setting-ic">💳</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Paiement</div><div style="font-size:10px;opacity:.26;margin-top:1px;" class="t2">Visa •••• 4242</div></div><div class="setting-arr">›</div></div>
+    <div class="setting-row"><div class="setting-ic">📍</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Adresses</div><div style="font-size:10px;opacity:.26;margin-top:1px;" class="t2">Gérer mes adresses</div></div><div class="setting-arr">›</div></div>
+    <div class="lbl">Notifications</div>
+    <div class="tgl"><div style="font-size:12px;font-weight:400;" class="t1">Notifications push</div><div class="tsw on"><div class="tth"></div></div></div>
+    <div class="tgl"><div style="font-size:12px;font-weight:400;" class="t1">Tracking activé</div><div class="tsw on"><div class="tth"></div></div></div>
+    <div class="tgl"><div style="font-size:12px;font-weight:400;" class="t1">SMS de rappel</div><div class="tsw on"><div class="tth"></div></div></div>
+    <div class="tgl" style="opacity:.35;"><div style="font-size:12px;" class="t2">Emails promotionnels</div><div class="tsw off"><div class="tth"></div></div></div>
+    <div class="lbl">Application</div>
+    <div class="setting-row"><div class="setting-ic">🌐</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Langue</div></div><div style="font-size:11px;opacity:.35;" class="acc">Français ›</div></div>
+    <div class="setting-row"><div class="setting-ic">🌙</div><div style="flex:1;"><div style="font-size:12px;" class="t1">Thème</div></div><div style="font-size:11px;opacity:.35;" class="acc">Sombre ›</div></div>
+    <div class="setting-row" style="opacity:.4;"><div class="setting-ic">🚪</div><div style="font-size:12px;" class="red">Se déconnecter</div></div>
+  </div>
+</div></div></div>
+
+<!-- SUPPORT -->
+<div class="page" id="p-support"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Support &amp; Aide</div></div></div>
+  <div class="body">
+    <div class="search-bar" style="margin-bottom:14px;"><div class="search-ic">◎</div><div class="search-txt">Chercher une aide…</div></div>
+    <div class="lbl">Contacter l'équipe</div>
+    <div style="display:flex;gap:7px;margin-bottom:14px;">
+      <div class="card-sm" style="flex:1;text-align:center;cursor:pointer;padding:12px 8px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;" class="t1">✉</div><div style="font-size:10px;font-weight:400;" class="t1">Email</div><div style="font-size:9px;opacity:.26;margin-top:2px;" class="t2">Réponse 2h</div></div>
+      <div class="card-sm" style="flex:1;text-align:center;cursor:pointer;padding:12px 8px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;" class="t1">◎</div><div style="font-size:10px;font-weight:400;" class="t1">Chat live</div><div style="font-size:9px;opacity:.26;margin-top:2px;" class="t2">Disponible</div></div>
+      <div class="card-sm" style="flex:1;text-align:center;cursor:pointer;padding:12px 8px;margin-bottom:0;"><div style="font-size:18px;margin-bottom:4px;" class="t1">☎</div><div style="font-size:10px;font-weight:400;" class="t1">Téléphone</div><div style="font-size:9px;opacity:.26;margin-top:2px;" class="t2">9h–19h</div></div>
+    </div>
+    <div class="lbl">Questions fréquentes</div>
+    <div class="faq-item"><div class="faq-q t1">Comment fonctionne le tracking ?<span class="acc" style="font-size:14px;">∨</span></div><div class="faq-a">Le barbier partage sa position uniquement 30 min avant le RDV, pour protéger sa vie privée.</div></div>
+    <div class="faq-item"><div class="faq-q t1">Puis-je annuler ma réservation ?<span style="font-size:14px;opacity:.25;" class="t2">∨</span></div></div>
+    <div class="faq-item"><div class="faq-q t1">Comment devenir barbier BLADE ?<span style="font-size:14px;opacity:.25;" class="t2">∨</span></div></div>
+    <div class="faq-item"><div class="faq-q t1">Quelles zones sont couvertes ?<span style="font-size:14px;opacity:.25;" class="t2">∨</span></div></div>
+    <div class="faq-item"><div class="faq-q t1">Remboursement et litiges<span style="font-size:14px;opacity:.25;" class="t2">∨</span></div></div>
+    <div style="font-size:10px;opacity:.18;margin-top:16px;" class="t2">BLADE v1.0.0 — Barber Concierge</div>
+  </div>
+</div></div></div>
+
+<!-- BARBER PRO -->
+<div class="page" id="p-barber"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Espace Barbier Pro</div></div><div class="badge">PRO</div></div>
+  <div class="body">
+    <div class="stat-g"><div class="sc"><div class="sc-v">7</div><div class="sc-l">RDV / mois</div></div><div class="sc"><div class="sc-v">4.9</div><div class="sc-l">Note</div></div><div class="sc"><div class="sc-v">595€</div><div class="sc-l">Revenus</div></div><div class="sc"><div class="sc-v">128</div><div class="sc-l">Clients</div></div></div>
+    <div class="lbl">Zones d'intervention</div>
+    <div class="zi"><div class="zd"></div><div style="font-size:12px;font-weight:400;flex:1;" class="t1">Paris 1er – 8e</div><div style="font-size:9px;" class="green">Actif</div></div>
+    <div class="zi"><div class="zd"></div><div style="font-size:12px;font-weight:400;flex:1;" class="t1">Hôtels 5* Île-de-France</div><div style="font-size:9px;" class="green">Actif</div></div>
+    <div class="zi off"><div class="zd off"></div><div style="font-size:12px;flex:1;" class="t2">Aéroport CDG</div><div style="font-size:9px;" class="t2">Inactif</div></div>
+    <div style="font-size:10px;opacity:.3;cursor:pointer;margin-bottom:12px;" class="acc">+ Ajouter une zone</div>
+    <div class="lbl">Missions à venir</div>
+    <div class="card" style="margin-bottom:8px;"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Alexandre M.</div><div class="price" style="font-size:16px;">85€</div></div><div style="font-size:10px;opacity:.26;margin-top:3px;" class="t2">Lun. 16 mars · 11h30 · Hôtel George V</div><div style="display:flex;gap:7px;margin-top:10px;"><button class="btn" style="flex:1;padding:8px;font-size:10px;">Valider</button><button class="btn-o" style="flex:1;padding:8px;font-size:10px;border-radius:10px;margin-top:0;">Refuser</button></div></div>
+    <div class="lbl">Disponibilité</div>
+    <div class="tgl"><div style="font-size:12px;font-weight:400;" class="t1">Je suis disponible</div><div class="tsw on"><div class="tth"></div></div></div>
+    <div class="tgl" style="opacity:.32;"><div style="font-size:12px;" class="t2">Partager ma position</div><div class="tsw off"><div class="tth"></div></div></div>
+  </div>
+</div></div></div>
+
+<!-- ADMIN -->
+<div class="page" id="p-admin"><div class="phone"><div class="notch"></div><div class="screen">
+  <div class="hdr"><div><div class="logo">BLADE</div><div class="sub">Tableau de bord Admin</div></div><div class="badge badge-red">ADMIN</div></div>
+  <div class="body">
+    <div class="stat-g"><div class="sc"><div class="sc-v">247</div><div class="sc-l">Clients</div></div><div class="sc"><div class="sc-v">18</div><div class="sc-l">Barbiers</div></div><div class="sc"><div class="sc-v">12.4k€</div><div class="sc-l">CA / mois</div></div><div class="sc"><div class="sc-v">4.8</div><div class="sc-l">Note moy.</div></div></div>
+    <div class="admin-tab"><button class="atab on">Vue générale</button><button class="atab">Utilisateurs</button><button class="atab">Finances</button></div>
+    <div class="lbl">Réservations — 7 derniers jours</div>
+    <div class="chart-bar-row"><div class="chart-bar" style="height:35%;"></div><div class="chart-bar" style="height:55%;"></div><div class="chart-bar" style="height:42%;"></div><div class="chart-bar" style="height:70%;"></div><div class="chart-bar hi" style="height:88%;"></div><div class="chart-bar" style="height:60%;"></div><div class="chart-bar" style="height:78%;"></div></div>
+    <div class="chart-labels"><div class="chart-lbl">Lun</div><div class="chart-lbl">Mar</div><div class="chart-lbl">Mer</div><div class="chart-lbl">Jeu</div><div class="chart-lbl">Ven</div><div class="chart-lbl">Sam</div><div class="chart-lbl">Dim</div></div>
+    <div class="lbl">Dernières activités</div>
+    <div class="card-sm"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Nouvelle réservation</div><div class="badge badge-green">+85€</div></div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">Alexandre M. → Jean-Marc V. · Il y a 5 min</div></div>
+    <div class="card-sm"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Nouveau barbier inscrit</div><div class="badge">PRO</div></div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">Thomas R. · Paris 18e · Il y a 1h</div></div>
+    <div class="card-sm"><div class="row"><div style="font-size:12px;font-weight:400;" class="t1">Litige signalé</div><div class="badge badge-red">!</div></div><div style="font-size:10px;opacity:.26;margin-top:2px;" class="t2">Client #1042 · À traiter</div></div>
+    <div class="lbl">Gestion rapide</div>
+    <div style="display:flex;gap:7px;">
+      <button class="btn-sm" style="flex:1;font-size:10px;">Barbiers</button>
+      <button class="btn-sm" style="flex:1;font-size:10px;background:transparent;border:1px solid rgba(184,150,62,.3);color:#B8963E;">Clients</button>
+      <button class="btn-sm" style="flex:1;font-size:10px;background:transparent;border:1px solid rgba(184,150,62,.3);color:#B8963E;">Litiges</button>
+    </div>
+  </div>
+</div></div></div>
+
+<script>
+function goPage(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(e=>e.classList.remove('on'));
+  const pg=document.getElementById('p-'+p);
+  if(pg)pg.classList.add('on');
+  document.querySelectorAll('.nb').forEach(e=>{
+    if(e.getAttribute('onclick')&&e.getAttribute('onclick').includes("'"+p+"'"))e.classList.add('on');
+  });
+}
+function setTheme(th){
+  document.body.className=th==='gold'?'':th;
+  document.querySelectorAll('.ts').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.ts.'+th).classList.add('on');
+  const a={gold:'#B8963E',bw:'#111',royal:'#C9A84C'};
+  document.documentElement.style.setProperty('--a',a[th]);
+}
+</script>
+</body>
+</html>
