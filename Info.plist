@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  BLADE — Barber Concierge
+  iOS Info.plist — Permissions & Configuration
+  
+  À copier dans : ios/BladeBarber/Info.plist
+  (ou fusionner avec l'existant après `react-native init`)
+-->
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>BLADE</string>
+
+  <key>CFBundleIdentifier</key>
+  <string>com.blade.barber</string>
+
+  <key>CFBundleName</key>
+  <string>blade-barber</string>
+
+  <key>CFBundleShortVersionString</key>
+  <string>1.0.0</string>
+
+  <key>CFBundleVersion</key>
+  <string>1</string>
+
+  <!-- ── PERMISSIONS ─────────────────────────────── -->
+
+  <!-- Géolocalisation (pour le tracking) -->
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>BLADE utilise votre localisation pour trouver les barbiers proches et activer le tracking de votre rendez-vous.</string>
+
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>BLADE utilise votre localisation en arrière-plan uniquement 30 minutes avant votre rendez-vous pour le tracking en temps réel.</string>
+
+  <!-- Caméra (photos de profil) -->
+  <key>NSCameraUsageDescription</key>
+  <string>BLADE utilise votre caméra pour prendre une photo de profil.</string>
+
+  <!-- Bibliothèque photos -->
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>BLADE accède à vos photos pour votre photo de profil.</string>
+
+  <!-- Face ID (si utilisé pour paiement) -->
+  <key>NSFaceIDUsageDescription</key>
+  <string>BLADE utilise Face ID pour sécuriser vos paiements.</string>
+
+  <!-- Contacts (optionnel - EVG, partage d'invitations) -->
+  <key>NSContactsUsageDescription</key>
+  <string>BLADE accède à vos contacts pour faciliter les invitations de groupe (EVG, mariage).</string>
+
+  <!-- ── MODES ──────────────────────────────────── -->
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+    <string>fetch</string>
+    <string>remote-notification</string>
+  </array>
+
+  <!-- ── DEEP LINKS ─────────────────────────────── -->
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>blade</string>
+        <string>blade-barber</string>
+      </array>
+    </dict>
+  </array>
+
+  <!-- ── APPEARANCE ────────────────────────────── -->
+  <key>UIStatusBarStyle</key>
+  <string>UIStatusBarStyleLightContent</string>
+
+  <key>UIUserInterfaceStyle</key>
+  <string>Dark</string>
+
+  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <false/>
+
+  <!-- ── APP TRANSPORT SECURITY ─────────────────── -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <false/>
+    <key>NSExceptionDomains</key>
+    <dict>
+      <key>localhost</key>
+      <dict>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+      </dict>
+    </dict>
+  </dict>
+
+  <!-- ── FONTS ─────────────────────────────────── -->
+  <key>UIAppFonts</key>
+  <array>
+    <string>CormorantGaramond-Light.ttf</string>
+    <string>CormorantGaramond-Regular.ttf</string>
+    <string>CormorantGaramond-LightItalic.ttf</string>
+    <string>DMSans-Regular.ttf</string>
+    <string>DMSans-Light.ttf</string>
+    <string>DMSans-Medium.ttf</string>
+  </array>
+
+</dict>
+</plist>
